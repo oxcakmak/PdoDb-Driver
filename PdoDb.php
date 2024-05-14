@@ -1,4 +1,15 @@
 <?php
+/**
+ * PdoDb Class
+ *
+ * @category  Database Access
+ * @package   PdoDbDb
+ * @author    Osman Cakmak <info@oxcakmak.com>
+ * @copyright Copyright (c) 2024-?
+ * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
+ * @link      https://github.com/oxcakmak/PdoDb-Driver
+ * @version   1.0.1
+ */
 class PdoDb {
     private $host;
     private $username; 
@@ -19,20 +30,29 @@ class PdoDb {
     private $joinClause;
     private $options;
 
-    public function __construct($host, $username, $password, $db, $port, $prefix, $charset) {
-        $dsn = "mysql:host={$host};dbname={$db};charset={$charset};port={$port}";
-        $options = [
+    public function __construct($host = null, $username = null, $password = null, $db = null, $port = null, $prefix = null, $charset = 'utf8') {
+        $this->host = $host;
+        $this->username = $username;
+        $this->password = $password;
+        $this->db = $db;
+        $this->port = $port;
+        $this->charset = $charset;
+        $this->tablePrefix = $prefix;
+        $this->options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
-        $this->pdo = new PDO($dsn, $username, $password, $options);
-        $this->tablePrefix = $prefix;
+        $this->connect();
     }
-
+    
     public function connect() {
         $dsn = "mysql:host={$this->host};dbname={$this->db};charset={$this->charset};port={$this->port}";
-        $this->pdo = new PDO($dsn, $this->username, $this->password, $this->options);
+        try {
+            $this->pdo = new PDO($dsn, $this->username, $this->password, $this->options);
+        } catch (PDOException $e) {
+            throw new Exception("Connection failed: " . $e->getMessage());
+        }
     }
 
     public function disconnect() {
@@ -235,4 +255,4 @@ class PdoDb {
     }
     
 }
-?>
+?
