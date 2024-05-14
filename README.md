@@ -129,9 +129,6 @@ Get 1 row of results:
 ```php
 $user = $db->rawQueryOne('SELECT * from users where id=?', Array(10));
 echo $user['login'];
-// Object return type
-$user = $db->ObjectBuilder()->rawQueryOne('SELECT * from users where id=?', Array(10));
-echo $user->login;
 ```
 Get 1 column value as a string:
 ```php
