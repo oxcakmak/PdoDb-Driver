@@ -14,8 +14,6 @@ Inspired Project:
 **[Select Query](#select-query)**  
 **[Delete Query](#delete-query)**  
 **[Insert Data](#insert-data)**
-**[Running raw SQL queries](#running-raw-sql-queries)**  
-**[Query Keywords](#query-keywords)**  
 **[Where Conditions](#where--having-methods)**  
 **[Order Conditions](#ordering-method)**  
 **[Group Conditions](#grouping-method)**  
