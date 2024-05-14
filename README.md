@@ -13,7 +13,6 @@ Inspired Project:
 **[Update Query](#update-query)**  
 **[Select Query](#select-query)**  
 **[Delete Query](#delete-query)**  
-**[Insert Data](#insert-data)**
 **[Where Conditions](#where--having-methods)**  
 **[Order Conditions](#ordering-method)**  
 **[Group Conditions](#grouping-method)**  
