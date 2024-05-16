@@ -27,7 +27,7 @@ This software is developed during my free time and I will be glad if somebody wi
 
 Everyone's time should be valuable, so please consider donating.
 
-[BuyMeCoffe](buymeacoffee.com/oxcakmak)
+[https://buymeacoffee.com/oxcakmak](https://buymeacoffee.com/oxcakmak)
 
 ### Installation
 To utilize this class, first import PdoDb.php into your project, and require it.
