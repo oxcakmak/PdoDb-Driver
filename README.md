@@ -39,8 +39,7 @@ require_once ('PdoDb.php');
 ### Initialization
 Simple initialization with utf8 charset set by default:
 ```php
-// It is recommended to leave the prefix field blank
-$db = new PdoDb (host, username, password, db, port, prefix);
+$db = new PdoDb (host, username, password, db, port);
 ```
 
 table prefix, port and database charset params are optional. If no charset should be set charset, set it to null
