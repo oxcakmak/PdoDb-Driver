@@ -30,7 +30,7 @@ class PdoDb {
     private $joinClause;
     private $options;
 
-    public function __construct($host = null, $username = null, $password = null, $db = null, $port = null, $prefix = null, $charset = 'utf8') {
+    public function __construct($host = null, $username = null, $password = null, $db = null, $port = 3306, $prefix = null, $charset = 'utf8') {
         $this->host = $host;
         $this->username = $username;
         $this->password = $password;
