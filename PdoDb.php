@@ -88,13 +88,16 @@ class PdoDb {
         return $this->pdo->lastInsertId();
     }
 
-    public function update($table, $data, $where) {
+    public function update($table, $data) {
         $fields = [];
         foreach ($data as $key => $value) {
             $fields[] = "$key = :$key";
         }
         $fields = implode(", ", $fields);
-        $sql = "UPDATE {$this->tablePrefix}$table SET $fields WHERE $where";
+        $sql = "UPDATE {$this->tablePrefix}$table SET $fields";
+        if (!empty($this->whereClause)) {
+            $sql .= " WHERE {$this->whereClause}";
+        }
         return $this->query($sql, $data)->rowCount();
     }
 
