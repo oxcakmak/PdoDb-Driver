@@ -8,26 +8,26 @@
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
- * @version   1.0.1
- */
+ * @version   1.0.3
+*/
 class PdoDb {
     private $host;
-    private $username; 
-    private $password; 
-    private $db; 
-    private $port; 
-    private $prefix; 
+    private $username;
+    private $password;
+    private $db;
+    private $port;
+    private $prefix;
     private $charset;
     private $pdo;
     private $stmt;
     private $tablePrefix;
     private $lastQuery;
     private $totalCount;
-    private $whereClause;
-    private $whereParams;
-    private $orderByClause;
-    private $groupByClause;
-    private $joinClause;
+    private $whereClause = '';
+    private $whereParams = [];
+    private $orderByClause = '';
+    private $groupByClause = '';
+    private $joinClause = '';
     private $options;
 
     public function __construct($host = null, $username = null, $password = null, $db = null, $port = 3306, $prefix = null, $charset = 'utf8') {
@@ -45,7 +45,7 @@ class PdoDb {
         ];
         $this->connect();
     }
-    
+
     public function connect() {
         $dsn = "mysql:host={$this->host};dbname={$this->db};charset={$this->charset};port={$this->port}";
         try {
@@ -74,18 +74,12 @@ class PdoDb {
 
     public function query($sql, $params = []) {
         $this->stmt = $this->pdo->prepare($sql);
-        $this->stmt->execute($params);
+        foreach ($params as $key => $value) {
+            $this->stmt->bindParam(":$key", $value);
+        }
+        $this->stmt->execute();
         $this->lastQuery = $this->stmt->queryString;
         return $this->stmt;
-    }
-
-    public function insert($table, $data) {
-        $keys = array_keys($data);
-        $fields = implode(", ", $keys);
-        $placeholders = ":" . implode(", :", $keys);
-        $sql = "INSERT INTO {$this->tablePrefix}$table ($fields) VALUES ($placeholders)";
-        $this->query($sql, $data);
-        return $this->pdo->lastInsertId();
     }
 
     public function update($table, $data) {
@@ -98,7 +92,17 @@ class PdoDb {
         if (!empty($this->whereClause)) {
             $sql .= " WHERE {$this->whereClause}";
         }
-        return $this->query($sql, $data)->rowCount();
+        $combinedParams = array_merge($this->whereParams, $data);
+        return $this->query($sql, $combinedParams)->rowCount();
+    }
+
+    public function insert($table, $data) {
+        $keys = array_keys($data);
+        $fields = implode(", ", $keys);
+        $placeholders = ":" . implode(", :", $keys);
+        $sql = "INSERT INTO {$this->tablePrefix}$table ($fields) VALUES ($placeholders)";
+        $this->query($sql, $data);
+        return $this->pdo->lastInsertId();
     }
 
     public function delete($table, $where, $params = []) {
@@ -125,7 +129,7 @@ class PdoDb {
             $sql .= " LIMIT $limit";
         }
         $stmt = $this->query($sql, $this->whereParams);
-        $this->resetClauses(); // Reset clauses after execution
+        $this->resetClauses();
         return $stmt->fetchAll();
     }
 
@@ -149,6 +153,7 @@ class PdoDb {
         $result = $stmt->fetchColumn();
         return $result;
     }
+
     public function where($column, $value, $operator = '=') {
         if (is_array($value)) {
             if ($operator === 'BETWEEN' || $operator === 'NOT BETWEEN') {
@@ -176,7 +181,7 @@ class PdoDb {
         }
         return $this;
     }
-    
+
     public function orWhere($column, $value, $operator = '=') {
         $this->whereClause .= " OR $column $operator :$column";
         $this->whereParams[$column] = $value;
@@ -202,7 +207,7 @@ class PdoDb {
         $this->joinClause .= " AND $table.$column = $value";
         return $this;
     }
-    
+
     public function joinOrWhere($table, $column, $value) {
         $this->joinClause .= " OR $table.$column = $value";
         return $this;
@@ -249,6 +254,7 @@ class PdoDb {
     public function getTotalCount() {
         return $this->totalCount;
     }
+
     private function resetClauses() {
         $this->whereClause = '';
         $this->whereParams = [];
@@ -256,6 +262,5 @@ class PdoDb {
         $this->groupByClause = '';
         $this->joinClause = '';
     }
-    
 }
-?
+?>
