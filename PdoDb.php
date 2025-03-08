@@ -37,12 +37,6 @@ class PDODb
     protected $_query;
 
     /**
-     * The previously executed SQL query
-     * @var string
-     */
-    protected $_lastQuery;
-
-    /**
      * An array that holds where conditions
      * @var array
      */
@@ -451,7 +445,7 @@ class PDODb
      */
     public function getLastQuery()
     {
-        return $this->_lastQuery;
+        return $this->_query;
     }
 
     /**
