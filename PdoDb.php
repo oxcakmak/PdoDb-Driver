@@ -445,6 +445,16 @@ class PDODb
     }
 
     /**
+     * Get the last executed SQL query
+     *
+     * @return string|null Returns the last executed query or null if no query was executed
+     */
+    public function getLastQuery()
+    {
+        return $this->_lastQuery;
+    }
+
+    /**
      * Method to create/update records
      *
      * @param string $tableName The name of the table.
