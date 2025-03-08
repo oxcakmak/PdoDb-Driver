@@ -309,7 +309,9 @@ class PDODb
             $whereValue = '(' . implode(',', array_fill(0, count($whereIn), '?')) . ')';
             $this->_bindParams = array_merge($this->_bindParams, $whereIn);
         } else {
-            $this->_bindParams[] = $whereValue;
+            if ($whereValue !== null) {
+                $this->_bindParams[] = $whereValue;
+            }
         }
 
         $this->_where[] = array($cond, $whereProp, $operator, $whereValue);
@@ -429,16 +431,6 @@ class PDODb
     }
 
     /**
-     * Get last error
-     *
-     * @return string
-     */
-    public function getLastError()
-    {
-        return $this->_error;
-    }
-
-    /**
      * Get the last executed SQL query
      *
      * @return string|null Returns the last executed query or null if no query was executed
@@ -446,6 +438,16 @@ class PDODb
     public function getLastQuery()
     {
         return $this->_query;
+    }
+
+    /**
+     * Get last error
+     *
+     * @return string
+     */
+    public function getLastError()
+    {
+        return $this->_error;
     }
 
     /**
@@ -647,40 +649,11 @@ class PDODb
         }
 
         $column = is_array($columns) ? implode(', ', $columns) : $columns;
-
         $this->_query = "SELECT $column FROM " . self::$prefix . $tableName;
-
-        // Join
-        if (!empty($this->_join)) {
-            $this->_buildJoin();
-        }
 
         // Where
         if (!empty($this->_where)) {
             $this->_buildWhere();
-        }
-
-        // Group by
-        if (!empty($this->_groupBy)) {
-            $this->_query .= " GROUP BY " . implode(', ', $this->_groupBy);
-        }
-
-        // Having
-        if (!empty($this->_having)) {
-            $this->_buildHaving();
-        }
-
-        // Order by
-        if (!empty($this->_orderBy)) {
-            $this->_query .= " ORDER BY ";
-            $i = 0;
-            foreach ($this->_orderBy as $prop => $value) {
-                if ($i > 0) {
-                    $this->_query .= ', ';
-                }
-                $this->_query .= "$prop $value";
-                $i++;
-            }
         }
 
         // Limit
@@ -696,7 +669,9 @@ class PDODb
             $stmt = $this->_prepareQuery();
             
             if (!empty($this->_bindParams)) {
-                foreach ($this->_bindParams as $i => $value) {
+                // Skip the first empty element
+                $params = array_slice($this->_bindParams, 1);
+                foreach ($params as $i => $value) {
                     $stmt->bindValue($i + 1, $value);
                 }
             }
