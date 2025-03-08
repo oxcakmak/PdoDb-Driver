@@ -186,6 +186,17 @@ class PDODb
     }
 
     /**
+     * Close the database connection
+     *
+     * @return void
+     */
+    public function disconnect()
+    {
+        $this->pdo = null;
+        self::$_instance = null;
+    }
+
+    /**
      * A method of returning the static instance to allow access to the
      * instantiated object from within another class.
      * Inheriting this class would require reloading connection info.
