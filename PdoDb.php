@@ -37,6 +37,12 @@ class PDODb
     protected $_query;
 
     /**
+     * Last executed query
+     * @var string
+     */
+    protected $_lastQuery;
+
+    /**
      * An array that holds where conditions
      * @var array
      */
@@ -214,6 +220,7 @@ class PDODb
      */
     protected function reset()
     {
+        $this->_lastQuery = $this->_query;  // Store last query before reset
         $this->_where = array();
         $this->_join = array();
         $this->_having = array();
@@ -437,7 +444,7 @@ class PDODb
      */
     public function getLastQuery()
     {
-        return $this->_query;
+        return $this->_lastQuery ?? $this->_query;
     }
 
     /**
