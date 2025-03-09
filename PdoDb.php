@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
- * @version   1.0.7
+ * @version   1.0.8
  */
 class PDODb
 {
