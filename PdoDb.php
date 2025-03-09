@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
- * @version   1.0.6
+ * @version   1.0.7
  */
 class PDODb
 {
@@ -475,9 +475,11 @@ class PDODb
             }
             $stmt->execute();
             $this->_lastInsertId = $this->pdo->lastInsertId();
+            $this->reset();
             return true;
         } catch (PDOException $e) {
             $this->_error = $e->getMessage();
+            $this->reset();
             return false;
         }
     }
@@ -523,10 +525,13 @@ class PDODb
                 }
             }
             
+
             $stmt->execute();
+            $this->reset();
             return true;
         } catch (PDOException $e) {
             $this->_error = $e->getMessage();
+            $this->reset();
             return false;
         }
     }
@@ -680,9 +685,11 @@ class PDODb
             $this->count = $stmt->rowCount();
             
             $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $this->reset();
             return $res;
         } catch (PDOException $e) {
             $this->_error = $e->getMessage();
+            $this->reset();
             return false;
         }
     }
