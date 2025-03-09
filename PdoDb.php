@@ -520,22 +520,34 @@ class PDODb
         try {
             $stmt = $this->_prepareQuery();
             
-            // Bind update data
-            foreach ($values as $i => $value) {
-                $stmt->bindValue($i + 1, $value);
+            // Reset bind params to avoid duplicates
+            $this->_bindParams = array('');
+            
+            // Bind update data first
+            foreach ($values as $value) {
+                $this->_bindParams[] = $value;
             }
             
-            // Bind where conditions
-            if (!empty($this->_bindParams)) {
-                foreach ($this->_bindParams as $i => $value) {
-                    $stmt->bindValue($i + count($values) + 1, $value);
+            // Then bind where conditions
+            if (!empty($this->_where)) {
+                foreach ($this->_where as $where) {
+                    if ($where[3] !== null) {
+                        $this->_bindParams[] = $where[3];
+                    }
                 }
             }
             
-
-            $stmt->execute();
+            // Bind all parameters
+            foreach ($this->_bindParams as $i => $value) {
+                if ($i > 0) { // Skip the first empty element
+                    $stmt->bindValue($i, $value);
+                }
+            }
+            
+            $result = $stmt->execute();
+            $this->_lastQuery = $this->_query;
             $this->reset();
-            return true;
+            return $result;
         } catch (PDOException $e) {
             $this->_error = $e->getMessage();
             $this->reset();
