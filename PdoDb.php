@@ -3,18 +3,18 @@
  * PdoDb Class
  *
  * @category  Database Access
- * @package   PdoDbDb
+ * @package   PdoDb
  * @author    Osman Cakmak <info@oxcakmak.com>
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
  * @version   1.0.9
  */
-class PDODb
+class PdoDb
 {
     /**
      * Static instance of self
-     * @var PDODb
+     * @var PdoDb
      */
     protected static $_instance;
 
@@ -201,9 +201,9 @@ class PDODb
      * instantiated object from within another class.
      * Inheriting this class would require reloading connection info.
      *
-     * @uses $db = PDODb::getInstance();
+     * @uses $db = PdoDb::getInstance();
      *
-     * @return PDODb Returns the current instance.
+     * @return PdoDb Returns the current instance.
      */
     public static function getInstance()
     {
@@ -383,7 +383,7 @@ class PDODb
      * @param string $operator   Comparison operator. Default is =
      * @param string $cond       Condition of where statement (OR, AND)
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function where($whereProp, $whereValue = null, $operator = '=', $cond = 'AND')
     {
@@ -408,7 +408,7 @@ class PDODb
      * @param string $joinCondition the condition.
      * @param string $joinType      'LEFT', 'INNER' etc.
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function join($joinTable, $joinCondition, $joinType = '')
     {
@@ -422,7 +422,7 @@ class PDODb
      * @param string $orderBy   The name of the database field.
      * @param string $orderDir  The direction (ASC, DESC)
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function orderBy($orderBy, $orderDir = "DESC")
     {
@@ -435,7 +435,7 @@ class PDODb
      *
      * @param string $groupBy The name of the database field.
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function groupBy($groupBy)
     {
@@ -450,7 +450,7 @@ class PDODb
      * @param mixed  $havingValue The value of the database field.
      * @param string $operator    Comparison operator. Default is =
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function having($havingProp, $havingValue = null, $operator = '=')
     {
@@ -463,7 +463,7 @@ class PDODb
      *
      * @param int $numRows The number of rows to limit
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function limit($numRows)
     {
@@ -602,13 +602,13 @@ class PDODb
     /**
      * This method allows you to specify multiple (method chaining optional) AND WHERE statements for SQL queries.
      *
-     * @uses $PDODb->where('id', 7)->where('title', 'MyTitle');
+     * @uses $PdoDb->where('id', 7)->where('title', 'MyTitle');
      *
      * @param string $whereProp  The name of the database field.
      * @param mixed  $whereValue The value of the database field.
      * @param string $operator   Comparison operator. Default is =
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function andWhere($whereProp, $whereValue = null, $operator = '=')
     {
@@ -618,13 +618,13 @@ class PDODb
     /**
      * This method allows you to specify multiple (method chaining optional) OR WHERE statements for SQL queries.
      *
-     * @uses $PDODb->orWhere('id', 7)->orWhere('title', 'MyTitle');
+     * @uses $PdoDb->orWhere('id', 7)->orWhere('title', 'MyTitle');
      *
      * @param string $whereProp  The name of the database field.
      * @param mixed  $whereValue The value of the database field.
      * @param string $operator   Comparison operator. Default is =
      *
-     * @return PDODb
+     * @return PdoDb
      */
     public function orWhere($whereProp, $whereValue = null, $operator = '=')
     {
