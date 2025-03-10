@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
- * @version   1.0.8
+ * @version   1.0.9
  */
 class PDODb
 {
@@ -239,13 +239,89 @@ class PDODb
      */
     protected function _prepareQuery()
     {
+        // Check and reconnect if connection is lost
+        if (!$this->pdo) {
+            $this->connect();
+        }
+
         try {
             $stmt = $this->pdo->prepare($this->_query);
+            if (!$stmt) {
+                throw new Exception("Failed to prepare query");
+            }
+            return $stmt;
         } catch (PDOException $e) {
             throw new Exception("Problem preparing query ($this->_query) " . $e->getMessage());
         }
+    }
 
-        return $stmt;
+    /**
+     * Update query. Be sure to first call the "where" method.
+     *
+     * @param string $tableName The name of the database table to work with.
+     * @param array  $tableData Array of data to update the desired row.
+     *
+     * @return bool
+     */
+    public function update($tableName, $tableData)
+    {
+        // Ensure connection is active
+        if (!$this->pdo) {
+            $this->connect();
+        }
+
+        $this->_query = "UPDATE " . self::$prefix . $tableName . " SET ";
+        
+        $fields = array_keys($tableData);
+        $values = array_values($tableData);
+        
+        $fieldSet = array();
+        foreach ($fields as $field) {
+            $fieldSet[] = "$field = ?";
+        }
+        
+        $this->_query .= implode(',', $fieldSet);
+        
+        if (!empty($this->_where)) {
+            $this->_buildWhere();
+        }
+
+        try {
+            $stmt = $this->_prepareQuery();
+            
+            // Reset bind params to avoid duplicates
+            $this->_bindParams = array('');
+            
+            // Bind update data first
+            foreach ($values as $value) {
+                $this->_bindParams[] = $value;
+            }
+            
+            // Then bind where conditions
+            if (!empty($this->_where)) {
+                foreach ($this->_where as $where) {
+                    if ($where[3] !== null) {
+                        $this->_bindParams[] = $where[3];
+                    }
+                }
+            }
+            
+            // Bind all parameters
+            foreach ($this->_bindParams as $i => $value) {
+                if ($i > 0) { // Skip the first empty element
+                    $stmt->bindValue($i, $value);
+                }
+            }
+            
+            $result = $stmt->execute();
+            $this->_lastQuery = $this->_query;
+            $this->reset();
+            return $result;
+        } catch (PDOException $e) {
+            $this->_error = $e->getMessage();
+            $this->reset();
+            return false;
+        }
     }
 
     /**
@@ -484,70 +560,6 @@ class PDODb
             $this->_lastInsertId = $this->pdo->lastInsertId();
             $this->reset();
             return true;
-        } catch (PDOException $e) {
-            $this->_error = $e->getMessage();
-            $this->reset();
-            return false;
-        }
-    }
-
-    /**
-     * Update query. Be sure to first call the "where" method.
-     *
-     * @param string $tableName The name of the database table to work with.
-     * @param array  $tableData Array of data to update the desired row.
-     *
-     * @return bool
-     */
-    public function update($tableName, $tableData)
-    {
-        $this->_query = "UPDATE " . self::$prefix . $tableName . " SET ";
-        
-        $fields = array_keys($tableData);
-        $values = array_values($tableData);
-        
-        $fieldSet = array();
-        foreach ($fields as $field) {
-            $fieldSet[] = "$field = ?";
-        }
-        
-        $this->_query .= implode(',', $fieldSet);
-        
-        if (!empty($this->_where)) {
-            $this->_buildWhere();
-        }
-
-        try {
-            $stmt = $this->_prepareQuery();
-            
-            // Reset bind params to avoid duplicates
-            $this->_bindParams = array('');
-            
-            // Bind update data first
-            foreach ($values as $value) {
-                $this->_bindParams[] = $value;
-            }
-            
-            // Then bind where conditions
-            if (!empty($this->_where)) {
-                foreach ($this->_where as $where) {
-                    if ($where[3] !== null) {
-                        $this->_bindParams[] = $where[3];
-                    }
-                }
-            }
-            
-            // Bind all parameters
-            foreach ($this->_bindParams as $i => $value) {
-                if ($i > 0) { // Skip the first empty element
-                    $stmt->bindValue($i, $value);
-                }
-            }
-            
-            $result = $stmt->execute();
-            $this->_lastQuery = $this->_query;
-            $this->reset();
-            return $result;
         } catch (PDOException $e) {
             $this->_error = $e->getMessage();
             $this->reset();
