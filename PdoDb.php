@@ -3,18 +3,18 @@
  * PdoDb Class
  *
  * @category  Database Access
- * @package   PdoDb
+ * @package   PdoDbDb
  * @author    Osman Cakmak <info@oxcakmak.com>
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
- * @version   1.0.9
+ * @version   1.1.0
  */
 class PdoDb
 {
     /**
      * Static instance of self
-     * @var PdoDb
+     * @var PDODb
      */
     protected static $_instance;
 
@@ -201,9 +201,9 @@ class PdoDb
      * instantiated object from within another class.
      * Inheriting this class would require reloading connection info.
      *
-     * @uses $db = PdoDb::getInstance();
+     * @uses $db = PDODb::getInstance();
      *
-     * @return PdoDb Returns the current instance.
+     * @return PDODb Returns the current instance.
      */
     public static function getInstance()
     {
@@ -383,7 +383,7 @@ class PdoDb
      * @param string $operator   Comparison operator. Default is =
      * @param string $cond       Condition of where statement (OR, AND)
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function where($whereProp, $whereValue = null, $operator = '=', $cond = 'AND')
     {
@@ -408,7 +408,7 @@ class PdoDb
      * @param string $joinCondition the condition.
      * @param string $joinType      'LEFT', 'INNER' etc.
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function join($joinTable, $joinCondition, $joinType = '')
     {
@@ -422,7 +422,7 @@ class PdoDb
      * @param string $orderBy   The name of the database field.
      * @param string $orderDir  The direction (ASC, DESC)
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function orderBy($orderBy, $orderDir = "DESC")
     {
@@ -435,7 +435,7 @@ class PdoDb
      *
      * @param string $groupBy The name of the database field.
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function groupBy($groupBy)
     {
@@ -450,7 +450,7 @@ class PdoDb
      * @param mixed  $havingValue The value of the database field.
      * @param string $operator    Comparison operator. Default is =
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function having($havingProp, $havingValue = null, $operator = '=')
     {
@@ -463,7 +463,7 @@ class PdoDb
      *
      * @param int $numRows The number of rows to limit
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function limit($numRows)
     {
@@ -600,15 +600,26 @@ class PdoDb
     }
 
     /**
+     * Fetches all rows from a prepared statement and returns them as an array
+     * 
+     * @param PDOStatement $stmt The prepared statement to fetch from
+     * @return array The fetched rows
+     */
+    protected function _fetchAll($stmt)
+    {
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * This method allows you to specify multiple (method chaining optional) AND WHERE statements for SQL queries.
      *
-     * @uses $PdoDb->where('id', 7)->where('title', 'MyTitle');
+     * @uses $PDODb->where('id', 7)->where('title', 'MyTitle');
      *
      * @param string $whereProp  The name of the database field.
      * @param mixed  $whereValue The value of the database field.
      * @param string $operator   Comparison operator. Default is =
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function andWhere($whereProp, $whereValue = null, $operator = '=')
     {
@@ -618,13 +629,13 @@ class PdoDb
     /**
      * This method allows you to specify multiple (method chaining optional) OR WHERE statements for SQL queries.
      *
-     * @uses $PdoDb->orWhere('id', 7)->orWhere('title', 'MyTitle');
+     * @uses $PDODb->orWhere('id', 7)->orWhere('title', 'MyTitle');
      *
      * @param string $whereProp  The name of the database field.
      * @param mixed  $whereValue The value of the database field.
      * @param string $operator   Comparison operator. Default is =
      *
-     * @return PdoDb
+     * @return PDODb
      */
     public function orWhere($whereProp, $whereValue = null, $operator = '=')
     {
