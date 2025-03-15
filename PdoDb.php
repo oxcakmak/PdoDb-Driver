@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2024-?
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @link      https://github.com/oxcakmak/PdoDb-Driver
- * @version   1.1.0
+ * @version   1.1.1
  */
 class PdoDb
 {
@@ -585,16 +585,21 @@ class PdoDb
         try {
             $stmt = $this->_prepareQuery();
             
-            if (!empty($this->_bindParams)) {
-                foreach ($this->_bindParams as $i => $value) {
-                    $stmt->bindValue($i + 1, $value);
+            // Skip the first empty element and bind where conditions
+            if (!empty($this->_where)) {
+                foreach ($this->_where as $i => $where) {
+                    if ($where[3] !== null) {
+                        $stmt->bindValue($i + 1, $where[3]);
+                    }
                 }
             }
             
-            $stmt->execute();
-            return true;
+            $result = $stmt->execute();
+            $this->reset();
+            return $result;
         } catch (PDOException $e) {
             $this->_error = $e->getMessage();
+            $this->reset();
             return false;
         }
     }
@@ -676,8 +681,35 @@ class PdoDb
      */
     public function getOne($tableName, $columns = '*')
     {
-        $res = $this->get($tableName, 1, $columns);
-        return $res ? $res[0] : null;
+        $this->_query = "SELECT " . (is_array($columns) ? implode(', ', $columns) : $columns) . 
+                        " FROM " . self::$prefix . $tableName;
+
+        if (!empty($this->_where)) {
+            $this->_buildWhere();
+        }
+
+        $this->limit(1);
+
+        try {
+            $stmt = $this->_prepareQuery();
+            
+            if (!empty($this->_where)) {
+                foreach ($this->_where as $i => $where) {
+                    if ($where[3] !== null) {
+                        $stmt->bindValue($i + 1, $where[3]);
+                    }
+                }
+            }
+            
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->reset();
+            return $result ?: null;
+        } catch (PDOException $e) {
+            $this->_error = $e->getMessage();
+            $this->reset();
+            return null;
+        }
     }
 
     /**
